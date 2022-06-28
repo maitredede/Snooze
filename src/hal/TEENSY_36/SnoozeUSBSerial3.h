@@ -31,6 +31,8 @@
 #ifndef SnoozeUSBSerial3_h
 #define SnoozeUSBSerial3_h
 
+#if (defined(USB_TRIPLE_SERIAL))
+
 #include "SnoozeBlock.h"
 #include "common.h"
 
@@ -60,12 +62,10 @@ public:
     virtual int peek();
     operator bool()
     {
-#if (defined(USB_TRIPLE_SERIAL))
         return usb_configuration && (usb_cdc3_line_rtsdtr & USB_SERIAL_DTR) && ((uint32_t)(systick_millis_count - usb_cdc3_line_rtsdtr_millis) >= 15);
-#else
-        return false;
-#endif
     }
 };
+#endif /* USB_DUAL_SERIAL || USB_TRIPLE_SERIAL */
+
 #endif /* SnoozeUSBSerial3_h */
 #endif /* __MK66FX1M0__ */

@@ -7,6 +7,8 @@
  **********************************************************************************/
 #if defined(__MK66FX1M0__)
 
+#if (defined(USB_SERIAL) || defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
+
 #include "SnoozeUSBSerial.h"
 #include "usb_dev.h"
 /*******************************************************************************
@@ -78,7 +80,7 @@ int SnoozeUSBSerial::peek()
  *******************************************************************************/
 void SnoozeUSBSerial::disableDriver(uint8_t mode)
 {
-#if F_CPU >= 20000000 && (defined(USB_SERIAL) || defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
+#if F_CPU >= 20000000
     if (mode == 0)
         return;
     // usb_configuration = 0;
@@ -102,7 +104,7 @@ void SnoozeUSBSerial::disableDriver(uint8_t mode)
  *******************************************************************************/
 void SnoozeUSBSerial::enableDriver(uint8_t mode)
 {
-#if F_CPU >= 20000000 && (defined(USB_SERIAL) || defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
+#if F_CPU >= 20000000
     if (mode == 0)
         return;
     if (mode == 1)
@@ -130,4 +132,5 @@ void SnoozeUSBSerial::clearIsrFlags(uint32_t ipsr)
 void SnoozeUSBSerial::isr(void)
 {
 }
+#endif /* USB_SERIAL || USB_DUAL_SERIAL || USB_TRIPLE_SERIAL */
 #endif /* __MK66FX1M0__ */
