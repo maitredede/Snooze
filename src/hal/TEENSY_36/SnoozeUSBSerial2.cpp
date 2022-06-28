@@ -7,17 +7,17 @@
  **********************************************************************************/
 #if defined(__MK66FX1M0__)
 
-#include "SnoozeUSBSerial.h"
+#include "SnoozeUSBSerial2.h"
 #include "usb_dev.h"
 /*******************************************************************************
  *  Stream virtual functions
  *******************************************************************************/
-size_t SnoozeUSBSerial::write(uint8_t b)
+size_t SnoozeUSBSerial2::write(uint8_t b)
 {
-    return usb_serial_putchar(b);
+    return usb_serial2_putchar(b);
 }
 
-size_t SnoozeUSBSerial::write(const uint8_t *buffer, size_t size)
+size_t SnoozeUSBSerial2::write(const uint8_t *buffer, size_t size)
 {
     size_t count = 0;
     if (Serial)
@@ -40,7 +40,7 @@ size_t SnoozeUSBSerial::write(const uint8_t *buffer, size_t size)
     else
     {
         int pb_size = strlen(print_buffer);
-        if (pb_size + size > USB_SERIAL_BUFFER_SIZE)
+        if (pb_size + size > USB_SERIAL2_BUFFER_SIZE)
             return 0;
         strcat(print_buffer, (const char *)buffer);
         write(0x00);
@@ -48,42 +48,42 @@ size_t SnoozeUSBSerial::write(const uint8_t *buffer, size_t size)
     return count;
 }
 
-int SnoozeUSBSerial::availableForWrite(void)
+int SnoozeUSBSerial2::availableForWrite(void)
 {
-    return usb_serial_write_buffer_free();
+    return usb_serial2_write_buffer_free();
 }
 
-int SnoozeUSBSerial::available()
+int SnoozeUSBSerial2::available()
 {
-    return usb_serial_available();
+    return usb_serial2_available();
 }
 
-void SnoozeUSBSerial::flush(void)
+void SnoozeUSBSerial2::flush(void)
 {
-    usb_serial_flush_output();
+    usb_serial2_flush_output();
 }
 
-int SnoozeUSBSerial::read()
+int SnoozeUSBSerial2::read()
 {
-    return usb_serial_getchar();
+    return usb_serial2_getchar();
 }
 
-int SnoozeUSBSerial::peek()
+int SnoozeUSBSerial2::peek()
 {
-    return usb_serial_peekchar();
+    return usb_serial2_peekchar();
 }
 /*******************************************************************************
- *  Sets the usb_configuration, usb_cdc_line_rtsdtr and usb_cdc_line_rtsdtr_millis
- *  to initial state so while(!Serial) works after sleeping. Still buggy...
+ *  Sets the usb_configuration, usb_cdc2_line_rtsdtr and usb_cdc2_line_rtsdtr_millis
+ *  to initial state so while(!SerialUSB1) works after sleeping. Still buggy...
  *******************************************************************************/
-void SnoozeUSBSerial::disableDriver(uint8_t mode)
+void SnoozeUSBSerial2::disableDriver(uint8_t mode)
 {
-#if F_CPU >= 20000000 && (defined(USB_SERIAL) || defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
+#if F_CPU >= 20000000 && (defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
     if (mode == 0)
         return;
     // usb_configuration = 0;
-    usb_cdc_line_rtsdtr = 0;
-    usb_cdc_line_rtsdtr_millis = systick_millis_count;
+    usb_cdc2_line_rtsdtr = 0;
+    usb_cdc2_line_rtsdtr_millis = systick_millis_count;
     if (mode == 1)
     {
         SIM_SCGC4 |= SIM_SCGC4_USBOTG;     // enable USB clock
@@ -100,9 +100,9 @@ void SnoozeUSBSerial::disableDriver(uint8_t mode)
 /*******************************************************************************
  *  Turns off usb clock if using 'sleep'.
  *******************************************************************************/
-void SnoozeUSBSerial::enableDriver(uint8_t mode)
+void SnoozeUSBSerial2::enableDriver(uint8_t mode)
 {
-#if F_CPU >= 20000000 && (defined(USB_SERIAL) || defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
+#if F_CPU >= 20000000 && (defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
     if (mode == 0)
         return;
     if (mode == 1)
@@ -121,13 +121,13 @@ void SnoozeUSBSerial::enableDriver(uint8_t mode)
 /*******************************************************************************
  *  not used
  *******************************************************************************/
-void SnoozeUSBSerial::clearIsrFlags(uint32_t ipsr)
+void SnoozeUSBSerial2::clearIsrFlags(uint32_t ipsr)
 {
 }
 /*******************************************************************************
  *  not used
  *******************************************************************************/
-void SnoozeUSBSerial::isr(void)
+void SnoozeUSBSerial2::isr(void)
 {
 }
 #endif /* __MK66FX1M0__ */

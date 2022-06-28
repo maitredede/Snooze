@@ -20,34 +20,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  ***********************************************************************************
- *  hal.h
+ *  SnoozeUSBSerial.h
  *  Teensy 3.6
  *
- * Purpose: Teensy 3.2 HAL
+ * Purpose: Low Power USB Serial Driver
  *
  **********************************************************************************/
 #if defined(__MK66FX1M0__)
 
-#ifndef __HAL_H__
-#define __HAL_H__
+#ifndef SnoozeUSBSerial2_h
+#define SnoozeUSBSerial2_h
 
-#define TYPE uint8_t
-#define REDUCED_CPU_BLOCK(SNOOZE_BLOCK) \
-    for (TYPE __ToDo = set_runlp(SNOOZE_BLOCK); __ToDo; __ToDo = set_run(SNOOZE_BLOCK))
-
-#ifdef __cplusplus
+#include "SnoozeBlock.h"
 #include "common.h"
-#include "SnoozeTimer.h"
-#include "SnoozeAlarm.h"
-#include "SnoozeTouch.h"
-#include "SnoozeCompare.h"
-#include "SnoozeDigital.h"
-#include "SnoozeAudio.h"
-#include "SnoozeUSBSerial.h"
-#include "SnoozeUSBSerial2.h"
-#include "SnoozeUSBSerial3.h"
-#include "SnoozeSPI.h"
 
-#endif /* cplusplus */
-#endif /* __HAL_H__ */
-#endif /* MK64FX512 */
+#define USB_SERIAL2_BUFFER_SIZE 100
+
+class SnoozeUSBSerial2 : public SnoozeBlock, public Stream
+{
+private:
+    virtual void enableDriver(uint8_t mode);
+    virtual void disableDriver(uint8_t mode);
+    virtual void clearIsrFlags(uint32_t ipsr);
+    static void isr(void);
+    char print_buffer[USB_SERIAL2_BUFFER_SIZE];
+
+public:
+    SnoozeUSBSerial2(void)
+    {
+        isDriver = true;
+        isUsed = true;
+    }
+    virtual size_t write(uint8_t b);
+    virtual size_t write(const uint8_t *buffer, size_t size);
+    virtual int availableForWrite(void);
+    virtual void flush(void);
+    virtual int available();
+    virtual int read();
+    virtual int peek();
+    operator bool()
+    {
+        return usb_configuration && (usb_cdc2_line_rtsdtr & USB_SERIAL_DTR) && ((uint32_t)(systick_millis_count - usb_cdc2_line_rtsdtr_millis) >= 15);
+    }
+};
+#endif /* SnoozeUSBSerial2_h */
+#endif /* __MK66FX1M0__ */
