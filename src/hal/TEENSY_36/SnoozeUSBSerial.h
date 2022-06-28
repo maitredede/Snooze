@@ -36,27 +36,35 @@
 
 #define USB_SERIAL_BUFFER_SIZE 100
 
-class SnoozeUSBSerial : public SnoozeBlock, public Stream {
+class SnoozeUSBSerial : public SnoozeBlock, public Stream
+{
 private:
-    virtual void enableDriver( uint8_t mode );
-    virtual void disableDriver( uint8_t mode );
-    virtual void clearIsrFlags( uint32_t ipsr );
-    static void isr( void );
+    virtual void enableDriver(uint8_t mode);
+    virtual void disableDriver(uint8_t mode);
+    virtual void clearIsrFlags(uint32_t ipsr);
+    static void isr(void);
     char print_buffer[USB_SERIAL_BUFFER_SIZE];
+
 public:
-    SnoozeUSBSerial( void ) {
+    SnoozeUSBSerial(void)
+    {
         isDriver = true;
         isUsed = true;
     }
-    virtual size_t write( uint8_t b );
-    virtual size_t write( const uint8_t *buffer, size_t size );
-    virtual int availableForWrite( void );
-    virtual void flush( void );
-    virtual int available( );
-    virtual int read( );
-    virtual int peek( );
-    operator bool( ) {
-        return usb_configuration && ( usb_cdc_line_rtsdtr & USB_SERIAL_DTR ) && ( ( uint32_t )( systick_millis_count - usb_cdc_line_rtsdtr_millis ) >= 15 );
+    virtual size_t write(uint8_t b);
+    virtual size_t write(const uint8_t *buffer, size_t size);
+    virtual int availableForWrite(void);
+    virtual void flush(void);
+    virtual int available();
+    virtual int read();
+    virtual int peek();
+    operator bool()
+    {
+#if (defined(USB_SERIAL) || defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
+        return usb_configuration && (usb_cdc_line_rtsdtr & USB_SERIAL_DTR) && ((uint32_t)(systick_millis_count - usb_cdc_line_rtsdtr_millis) >= 15);
+#else
+        return false;
+#endif
     }
 };
 #endif /* SnoozeUSBSerial_h */

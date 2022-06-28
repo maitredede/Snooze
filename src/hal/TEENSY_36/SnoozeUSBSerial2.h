@@ -60,7 +60,11 @@ public:
     virtual int peek();
     operator bool()
     {
+#if (defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL))
         return usb_configuration && (usb_cdc2_line_rtsdtr & USB_SERIAL_DTR) && ((uint32_t)(systick_millis_count - usb_cdc2_line_rtsdtr_millis) >= 15);
+#else
+        return false;
+#endif
     }
 };
 #endif /* SnoozeUSBSerial2_h */

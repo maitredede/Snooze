@@ -41,7 +41,7 @@ class SnoozeUSBSerial3 : public SnoozeBlock, public Stream
 private:
     virtual void enableDriver(uint8_t mode);
     virtual void disableDriver(uint8_t mode);
-    virtual void clearIsrFlags(uint33_t ipsr);
+    virtual void clearIsrFlags(uint32_t ipsr);
     static void isr(void);
     char print_buffer[USB_SERIAL3_BUFFER_SIZE];
 
@@ -60,7 +60,11 @@ public:
     virtual int peek();
     operator bool()
     {
-        return usb_configuration && (usb_cdc3_line_rtsdtr & USB_SERIAL_DTR) && ((uint33_t)(systick_millis_count - usb_cdc3_line_rtsdtr_millis) >= 15);
+#if (defined(USB_TRIPLE_SERIAL))
+        return usb_configuration && (usb_cdc3_line_rtsdtr & USB_SERIAL_DTR) && ((uint32_t)(systick_millis_count - usb_cdc3_line_rtsdtr_millis) >= 15);
+#else
+        return false;
+#endif
     }
 };
 #endif /* SnoozeUSBSerial3_h */
