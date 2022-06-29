@@ -3,27 +3,32 @@
 #ifndef common_h
 #define common_h
 
-#define COMPARE_WAKE    34
-#define ALARM_WAKE      35
-#define TIMER_WAKE      36
-#define TOUCH_WAKE      37
+#define UNKNOWN_WAKE -1
+#define COMPARE_WAKE 34
+#define ALARM_WAKE 35
+#define TIMER_WAKE 36
+#define TOUCH_WAKE 37
+#define USBOTG_WAKE 38
+#define USBDCD_WAKE 39
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 
-
-typedef enum {
-    TSI          = 3,
-    CMP          = 4,
+typedef enum
+{
+    TSI = 3,
+    CMP = 4,
 } PIN_TYPE;
 
 /* powerdown Modes */
-typedef enum {
+typedef enum
+{
     RUN,
     RUN_LP,
     WAIT,
